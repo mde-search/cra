@@ -1,0 +1,25 @@
+%!TEX root = ttc16-cra-sigma.tex
+
+\section{Install and Run Locally}
+\label{sec:InstallLocally}
+
+The only requirements for running the solution is git and sbt\footnote{simple-built-tool \Cf \url{http://www.scala-sbt.org/}}.
+To reproduce the benchmark simply execute these steps in a command line:
+
+\begin{bashcode}
+$ git clone \
+  https://github.com/fikovnik/ttc16-cra-sigma
+$ cd ttc16-cra-sigma
+$ ./build.sh
+$ ./run.sh
+\end{bashcode}
+
+\section{Install and Run on SHARE}
+\label{sec:InstallSHARE}
+
+On the share environment we provide ready to be run solution. Simply log to the SHARE VM \texttt{remoteArchLinux64-TTC16\_SIGMA} with \texttt{ttcuser/ttcuser} as user name/password and run the following:
+
+\begin{bashcode}
+$ cd ttc16-cra-sigma
+$ ./run.sh
+\end{bashcode}

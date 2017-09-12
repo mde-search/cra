@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<architectureCRA:ClassModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:architectureCRA="http://momot.big.tuwien.ac.at/architectureCRA/1.0" xsi:schemaLocation="http://momot.big.tuwien.ac.at/architectureCRA/1.0 ../src/main/resources/architectureCRA.ecore">
+<features xsi:type="architectureCRA:Method" name="addItem" dataDependency="//@features.5 //@features.6"/>
+<features xsi:type="architectureCRA:Method" name="cartTotal" dataDependency="//@features.5" functionalDependency="//@features.4"/>
+<features xsi:type="architectureCRA:Method" name="checkOut" dataDependency="//@features.5" functionalDependency="//@features.1"/>
+<features xsi:type="architectureCRA:Method" name="print" dataDependency="//@features.6 //@features.7 //@features.8"/>
+<features xsi:type="architectureCRA:Method" name="itemTotal" dataDependency="//@features.7 //@features.8"/>
+<features xsi:type="architectureCRA:Attribute" name="items"/>
+<features xsi:type="architectureCRA:Attribute" name="name"/>
+<features xsi:type="architectureCRA:Attribute" name="price"/>
+<features xsi:type="architectureCRA:Attribute" name="qty"/>
+</architectureCRA:ClassModel>

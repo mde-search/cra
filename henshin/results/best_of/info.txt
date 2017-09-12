@@ -1,0 +1,8 @@
+Here we placed our best results for each input model.
+They are results from the following runs:
+
+inputRDG_A: nearly all runs, e.g. all crossover test runs.
+inputRDG_B: nearly all runs, e.g. all crossover test runs.
+inputRDG_C: test run for initilization with 20 iterations and all "features in one class" initilization. ()
+inputRDG_D: test run for initilization with 20 iterations and "mixed" initilization.
+inputRDG_E: test run for initilization with 20 iterations and "mixed" initilization.

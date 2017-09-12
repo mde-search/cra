@@ -1,0 +1,37 @@
+%!TEX root = ttc16-cra-sigma.tex
+
+% \enlargethispage{10mm}
+
+\section{Introduction}
+\label{sec:Introduction}
+
+%% Overview
+In this paper we describe our solution for the \TTC Class Responsibility Assignment (CRA) case study~\cite{Fleck2016} using the \SIGMA~\cite{Krikava2014}.
+The goal of this case study is to find high-quality class diagrams from existing responsibility dependency graphs (RDG).
+The RDGs only contain a set of methods and attributes with functional and data relationships among them.
+The CRA problem is essentially about deciding where the different responsibilities in the form of class structural features (\Ie operations and attributes) belong and how objects should interact by using those operations~\cite{bowman2010solving}.
+Since the design space of all possible class diagrams grows exponentially with the size of the RDG model~\cite{Fleck2016} (\Ie the number of structural features), the problem could be solved using search-based optimization techniques~\cite{coello2007evolutionary}.
+Concretely, the use of multi-objective genetic algorithms seems to provide an efficient solution for the CRA problem as demonstrated by Bowman~\Etal~\cite{bowman2010solving}.
+
+In this paper, we therefore present a solution to the CRA problem using \SIGMA and multi-objective genetic algorithms.
+We use \SIGMA to transform the input RDG diagram into a search-based problem which is then solved by a genetic algorithm.
+In the implementation we use NSGA-III and SPEA2 algorithms from the MOEA framework\footnote{\url{http://www.moeaframework.org/}}.
+The MOEA Framework is a free and open source Java library for developing and experimenting with multi-objective evolutionary algorithms (MOEAs) and other general-purpose multi-objective optimization algorithms~\cite{moea}.
+
+%% Scala
+\SIGMA is a family of Scala\footnote{\url{http://scala-lang.org}} internal DSLs for model manipulation tasks such as model validation, model to model (M2M), and model to text (M2T) transformations.
+Scala is a statically typed production-ready \emph{General-Purpose Language} (GPL) that supports both object-oriented and functional styles of programming.
+It uses type inference to combine static type safety with a \emph{``look and feel''} close to dynamically typed languages.
+Furthermore, it is supported by the major integrated development environments bringing EMF modeling to other IDEs than traditionally Eclipse (the solution was developed in IntelliJ IDEA\footnote{\url{https://www.jetbrains.com/idea/}}).
+
+%% SIGMA
+\SIGMA DSLs are embedded in Scala as a library allowing one to manipulate models using high-level constructs similar to the ones found in the external model manipulation DSLs.
+The intent is to provide an approach that developers can use to implement many of the practical model manipulations within a familiar environment, with a reduced learning overhead as well as improved usability and performance.
+The solution is based on the \emph{Eclipse Modeling Framework} (EMF)~\cite{EMF}, which is a popular meta-modeling framework widely used in both academia and industry, and which is directly supported by \SIGMA.
+
+In this particular \TTC case study, the main problem is in solving an optimization problem rather than a transformation problem.
+\SIGMA is therefore only used to transform input RDG model into an optimization problem and to transform the problems' solutions into class diagrams.
+
+%% Organization
+The complete source code is available on Github\footnote{\url{https://github.com/fikovnik/ttc16-cra-sigma}}.
+In the Appendix~\ref{sec:InstallLocally} and~\ref{sec:InstallSHARE} we provide steps how to install it locally as well as how to run it on the SHARE environment.

@@ -1,0 +1,921 @@
+Entity:
+ClassModel 146 105
+NamedElement  * 
+
+
+Operation:
+mmi
+ClassModel
+int
+ci UMLClass cj UMLClass 
+ query static
+true
+result = ci.encapsulates->select( mi | mi : UMLMethod )->collect( m | cj.encapsulates->intersection(m.functionalDependency)->size() )->sum()
+
+
+Operation:
+mai
+ClassModel
+int
+ci UMLClass cj UMLClass 
+ query static
+true
+result = ci.encapsulates->select( mi | mi : UMLMethod )->collect( m | cj.encapsulates->intersection(m.dataDependency)->size() )->sum()
+
+
+Operation:
+cohesion
+ClassModel
+double
+ci UMLClass 
+ query static
+true
+nmethods = ci.encapsulates->select( f | f : UMLMethod )->size() & natts = ci.encapsulates->select( f | f : Attribute )->size() & ( nmethods = 0 => result = 0 ) & ( nmethods > 1 & natts = 0 => result = ClassModel.mmi(ci,ci) / ( 1.0 * nmethods * ( nmethods - 1 ) ) ) & ( natts /= 0 & nmethods = 1 => result = ClassModel.mai(ci,ci) / ( 1.0 * natts ) ) & ( nmethods > 1 & natts /= 0 => result = ( ClassModel.mai(ci,ci) / ( 1.0 * nmethods * natts ) + ClassModel.mmi(ci,ci) / ( 1.0 * nmethods * ( nmethods - 1 ) ) ) )
+
+
+Operation:
+coupling
+ClassModel
+double
+ci UMLClass cj UMLClass 
+ query static
+true
+nmethodsi = ci.encapsulates->select( f | f : UMLMethod )->size() & nattsj = cj.encapsulates->select( f | f : Attribute )->size() & nmethodsj = cj.encapsulates->select( f | f : UMLMethod )->size() & ( nmethodsi = 0 => result = 0 ) & ( nmethodsi /= 0 & nattsj = 0 & nmethodsj <= 1 => result = 0 ) & ( nmethodsi /= 0 & nattsj = 0 & nmethodsj > 1 => result = ClassModel.mmi(ci,cj) / ( 1.0 * nmethodsi * ( nmethodsj - 1 ) ) ) & ( nmethodsi /= 0 & nattsj /= 0 & nmethodsj <= 1 => result = ClassModel.mai(ci,cj) / ( 1.0 * nmethodsi * nattsj ) ) & ( nmethodsi /= 0 & nattsj /= 0 & nmethodsj > 1 => result = ( ClassModel.mai(ci,cj) / ( 1.0 * nmethodsi * nattsj ) ) + ( ClassModel.mmi(ci,cj) / ( 1.0 * nmethodsi * ( nmethodsj - 1 ) ) ) )
+
+
+Operation:
+cohesionratio
+ClassModel
+double
+
+ query static
+true
+result = UMLClass->collect( c | ClassModel.cohesion(c) )->sum()
+
+
+Operation:
+couplingratio
+ClassModel
+double
+
+ query static
+true
+result = UMLClass->collect( ci | UMLClass.allInstances->excluding(ci)->collect( cj | ClassModel.coupling(ci,cj) )->sum() )->sum()
+
+
+Operation:
+dma
+ClassModel
+int
+mi String aj String 
+ query static cached
+true
+Attribute[aj] : UMLMethod[mi].dataDependency => result = 1
+
+
+Operation:
+dmm
+ClassModel
+int
+mi String mj String 
+ query static cached
+true
+UMLMethod[mj] : UMLMethod[mi].functionalDependency => result = 1
+
+
+Operation:
+isAttribute
+ClassModel
+boolean
+n String 
+ query static cached
+true
+Attribute->collect(name)->includes(n) => result = true
+
+
+Operation:
+isMethod
+ClassModel
+boolean
+n String 
+ query static cached
+true
+UMLMethod->collect(name)->includes(n) => result = true
+
+
+Entity:
+UMLClass 407 163
+NamedElement  * 
+
+
+Entity:
+Attribute 503 302
+Feature  * 
+
+
+Entity:
+UMLMethod 715 297
+Feature  * 
+
+
+Operation:
+dependsOn0
+UMLMethod
+Set(Feature)
+seen Set(Feature) 
+ query
+true
+directDeps = ( dataDependency->union(functionalDependency) ) - seen & result = directDeps->union(functionalDependency->unionAll(dataDependency))
+
+
+
+
+
+
+Operation:
+dependsOn
+UMLMethod
+Set(Feature)
+seen Set(Feature) 
+ query
+true
+directDeps = ( dataDependency->union(functionalDependency) ) - seen & result = directDeps->union((functionalDependency - seen)->unionAll(dependsOn(seen->union(directDeps))))
+
+
+
+
+
+
+
+Entity:
+Feature 646 222
+NamedElement  * abstract 
+
+
+Entity:
+NamedElement 179 18
+null  * abstract 
+name String 3 false true false
+
+Entity:
+Math 722 508
+null  * external 
+
+
+Operation:
+random
+Math
+double
+
+ query static
+true
+result = 0.5
+
+
+Entity:
+GeneticAlgorithm 69 489
+null  * auxiliary 
+maxfitness double 3 false false true maxvalue int 3 false false true maxpop int 3 false false true
+
+Operation:
+incrementValue
+GeneticAlgorithm
+int
+v int 
+ query static
+true
+( v + 1 = maxvalue => result = 1 ) & ( v + 1 /= maxvalue => result = ( v + 1 ) mod maxvalue )
+
+
+Operation:
+isUnfit
+GeneticAlgorithm
+boolean
+v GAIndividual 
+ query static
+true
+maxfit = GeneticAlgorithm.maxfitness & ( v.fitnessval < maxfit - 0.5 * maxfit.abs - 0.5 => result = true )
+
+
+Operation:
+isElite
+GeneticAlgorithm
+boolean
+v GAIndividual 
+ query static
+true
+maxfit = GeneticAlgorithm.maxfitness & ( v.fitnessval >= maxfit - 0.2 * maxfit.abs - 0.2 => result = true )
+
+
+Operation:
+isCombinable
+GeneticAlgorithm
+boolean
+p GAIndividual q GAIndividual 
+ query static
+true
+maxfit = GeneticAlgorithm.maxfitness & ( p.fitnessval >= maxfit - 0.25 * maxfit.abs - 0.25 & q.fitnessval >= maxfit - 0.25 * maxfit.abs - 0.25 => result = true )
+
+
+Operation:
+isMutatable
+GeneticAlgorithm
+boolean
+v GAIndividual 
+ query static
+true
+maxfit = GeneticAlgorithm.maxfitness & ( v.fitnessval >= maxfit - 0.5 * maxfit.abs - 0.5 => result = true )
+
+
+Operation:
+cull
+GeneticAlgorithm
+void
+p Sequence(GAIndividual) n int 
+
+true
+population = p.subrange(n - maxpop,n)->asSet() & p.subrange(1,n - ( maxpop + 1 ))->isDeleted()
+
+
+Entity:
+GAIndividual 365 469
+null  * auxiliary 
+fitnessval double 3 false false false
+
+Operation:
+combine
+GAIndividual
+GAIndividual
+g GAIndividual 
+ query
+true
+n = traits.size & m = g.traits.size & p = ( Math.random() * n )->floor() + 1 & GAIndividual->exists( h | h.traits = traits.subrange(1,p) ^ g.traits.subrange(p + 1,m) & result = h )
+
+
+Operation:
+mutate
+GAIndividual
+GAIndividual
+
+ query
+true
+n = traits.size & p = ( Math.random() * n )->floor() + 1 & val = traits[p].value & itm = traits[p].item & GAIndividual->exists( h | h.traits->includesAll(traits) & GATrait->exists( newt | newt.item = itm & newt.value = GeneticAlgorithm.incrementValue(val) & h.traits[p] = newt ) & result = h )
+
+
+Operation:
+toString
+GAIndividual
+String
+
+ query
+true
+result = traits->collect( t | t.item + " = " + t.value + " " )->sum()
+
+
+Operation:
+atts
+GAIndividual
+Set(GATrait)
+c int 
+ query
+true
+result = traits->select( t | t.value = c & ClassModel.isAttribute(t.item) )
+
+
+Operation:
+mets
+GAIndividual
+Set(GATrait)
+c int 
+ query
+true
+result = traits->select( t | t.value = c & ClassModel.isMethod(t.item) )
+
+
+Operation:
+mai
+GAIndividual
+int
+ci int cj int 
+ query
+true
+result = mets(ci)->collect( m | atts(cj)->collect( a | ClassModel.dma(m.item,a.item) )->sum() )->sum()
+
+
+Operation:
+mmi
+GAIndividual
+int
+ci int cj int 
+ query
+true
+result = mets(ci)->collect( m | mets(cj)->collect( a | ClassModel.dmm(m.item,a.item) )->sum() )->sum()
+
+
+Operation:
+cohesion
+GAIndividual
+double
+ci int 
+ query
+true
+nmethods = mets(ci)->size() & natts = atts(ci)->size() & ( nmethods = 0 => result = 0 ) & ( nmethods > 1 & natts = 0 => result = mmi(ci,ci) / ( 1.0 * nmethods * ( nmethods - 1 ) ) ) & ( natts /= 0 & nmethods = 1 => result = mai(ci,ci) / ( 1.0 * natts ) ) & ( nmethods > 1 & natts /= 0 => result = mai(ci,ci) / ( 1.0 * nmethods * natts ) + ( mmi(ci,ci) / ( 1.0 * nmethods * ( nmethods - 1 ) ) ) )
+
+
+Operation:
+cohesionrat
+GAIndividual
+double
+
+ query
+true
+result = traits.value->asSet()->collect( c | cohesion(c) )->sum()
+
+
+Operation:
+coupling
+GAIndividual
+double
+ci int cj int 
+ query
+true
+nmethodsi = mets(ci)->size() & nmethodsj = mets(cj)->size() & natts = atts(cj)->size() & ( nmethodsi = 0 => result = 0 ) & ( nmethodsi /= 0 & natts = 0 & nmethodsj <= 1 => result = 0 ) & ( nmethodsi /= 0 & natts = 0 & nmethodsj > 1 => result = mmi(ci,cj) / ( 1.0 * nmethodsi * ( nmethodsj - 1 ) ) ) & ( nmethodsi /= 0 & natts /= 0 & nmethodsj <= 1 => result = mai(ci,cj) / ( 1.0 * nmethodsi * natts ) ) & ( nmethodsi /= 0 & natts /= 0 & nmethodsj > 1 => result = mai(ci,cj) / ( 1.0 * nmethodsi * natts ) + mmi(ci,cj) / ( 1.0 * nmethodsi * ( nmethodsj - 1 ) ) )
+
+
+Operation:
+couplingrat
+GAIndividual
+double
+
+ query
+true
+result = traits.value->asSet()->collect( ci | traits.value->asSet()->excluding(ci)->collect( cj | coupling(ci,cj) )->sum() )->sum()
+
+
+Operation:
+fitness
+GAIndividual
+double
+
+ query
+true
+result = cohesionrat() - couplingrat()
+
+
+Entity:
+GATrait 677 364
+null  * auxiliary 
+item String 3 false false false value int 3 false false false
+
+
+
+
+
+Association:
+ClassModel UMLClass 0 335 116 408 160 0 classes null 
+
+
+Association:
+ClassModel Feature 0 332 215 644 241 0 features null 
+
+
+Association:
+UMLClass Feature -1 499 185 650 226 0 encapsulates isEncapsulatedBy 
+
+
+Association:
+UMLMethod Attribute 0 716 302 578 304 0 dataDependency null 
+
+
+Association:
+UMLMethod UMLMethod 0 721 304 685 348 0 functionalDependency null 
+
+
+Association:
+GeneticAlgorithm GAIndividual -1 260 497 365 525 0 population null 
+
+
+Association:
+GAIndividual GATrait 0 582 473 675 402 0 traits null 
+ordered 
+
+Association:
+GeneticAlgorithm GAIndividual 0 161 490 440 467 0 elite null 161 436 438 433 
+
+
+Association:
+GeneticAlgorithm GAIndividual 0 240 588 416 573 0 recombined null 242 608 393 610 
+
+
+Association:
+GeneticAlgorithm GAIndividual 0 135 589 572 569 0 mutated null 136 632 521 637 
+
+
+Generalisation:
+NamedElement ClassModel 195 101 197 62
+
+
+
+Generalisation:
+NamedElement UMLClass 447 163 384 59
+
+
+
+Generalisation:
+Feature Attribute 761 296 709 248
+
+
+
+Generalisation:
+Feature UMLMethod 558 301 651 247
+
+
+
+Generalisation:
+NamedElement Feature 707 221 427 43
+
+
+
+Activity:
+application
+ while Feature->exists(isEncapsulatedBy.size = 0) do execute ( createClasses() )  ;  while UMLClass->exists( c | c.name /= "Class0" & c.encapsulates.size = 1 ) do execute ( refactor() )  ; execute ( cleanup() ) ; execute ( measures() )   
+
+
+
+
+
+GeneralUseCase:
+createClasses 
+
+
+
+false
+
+
+Constraint:
+dataDependency.size = 0
+functionalDependency.size = 0
+UMLClass->exists( c | c.name = "Class0" & self : c.encapsulates )
+UMLMethod createClasses
+false
+
+
+
+Constraint:
+UMLMethod->select( f | self : f.dataDependency )->size() = 0
+null
+UMLClass->exists( c | c.name = "Class0" & self : c.encapsulates )
+Attribute createClasses
+false
+
+
+
+Constraint:
+dataDependency.size > 0
+c : UMLClass & dataDependency <: c.encapsulates@pre
+self : c.encapsulates
+UMLMethod createClasses
+false
+
+
+
+Constraint:
+isEncapsulatedBy.size = 0
+unencapdas = dataDependency->select( d | d.isEncapsulatedBy.size = 0 ) & UMLMethod->forAll( m | m.isEncapsulatedBy.size = 0 => m.dataDependency->select( a | a.isEncapsulatedBy.size = 0 )->size() <= unencapdas.size )
+UMLClass->exists( c | c.name = "Class" + ( UMLClass@pre.size + 1 ) & self : c.encapsulates & unencapdas <: c.encapsulates )
+UMLMethod createClasses
+false
+
+
+
+Constraint:
+c : UMLClass
+dataDependency <: c.encapsulates@pre & functionalDependency.size > 0 & functionalDependency <: c.encapsulates@pre
+self : c.encapsulates
+UMLMethod createClasses
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+refactor 
+
+
+
+false
+
+
+Constraint:
+m : encapsulates@pre
+m->oclIsKindOf(UMLMethod) & c : UMLClass & depends = m.dataDependency->union(m.functionalDependency) & depends->intersection(c.encapsulates@pre)->size() > depends->intersection(encapsulates@pre)->size()
+m : c.encapsulates
+UMLClass refactor
+false
+
+
+
+Constraint:
+a : encapsulates@pre
+a->oclIsKindOf(Attribute) & c : UMLClass & dependings = UMLMethod->select( f | f.dataDependency->includes(a) ) & dependings->intersection(c.encapsulates@pre)->size() > dependings->intersection(encapsulates@pre)->size()
+a : c.encapsulates
+UMLClass refactor
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+cleanup 
+
+
+
+false
+
+
+Constraint:
+encapsulates.size = 0
+null
+self->isDeleted()
+UMLClass cleanup
+false
+
+
+
+Constraint:
+null
+true
+classes = UMLClass.allInstances & features = Feature.allInstances
+ClassModel cleanup
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+measures 
+
+
+
+false
+
+
+Constraint:
+c : UMLClass
+null
+( "CLASS " + c.name + " has " + c.encapsulates.size + " features, cohesion = " )->display() & ClassModel.cohesion(c)->display()
+ClassModel measures
+false
+
+
+
+Constraint:
+null
+true
+"Coupling ratio is: "->display() & ClassModel.couplingratio()->display()
+ClassModel measures
+false
+
+
+
+Constraint:
+null
+true
+"Cohesion ratio is: "->display() & ClassModel.cohesionratio()->display()
+ClassModel measures
+false
+
+
+
+Constraint:
+null
+true
+"CRA is: "->display() & ( ClassModel.cohesionratio() - ClassModel.couplingratio() )->display()
+ClassModel measures
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+preprocess 
+
+createClasses refactor cleanup measures 
+
+false
+
+
+
+
+
+
+GeneralUseCase:
+evolve 
+
+
+
+false
+
+
+Constraint:
+p : population@pre
+GeneticAlgorithm.isUnfit(p)
+p->isDeleted()
+GeneticAlgorithm evolve
+false
+
+
+
+Constraint:
+p : population
+GeneticAlgorithm.isElite(p)
+p : elite
+GeneticAlgorithm evolve
+false
+
+
+
+Constraint:
+p : elite
+q : population & q.fitnessval < p.fitnessval & GeneticAlgorithm.isCombinable(p,q)
+p.combine(q) : recombined
+GeneticAlgorithm evolve
+false
+
+
+
+Constraint:
+p : population
+GeneticAlgorithm.isMutatable(p) & q = p.mutate() & q.fitness() > p.fitnessval - 0.5 * p.fitnessval.abs - 0.5
+q : mutated
+GeneticAlgorithm evolve
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+nextgeneration 
+
+
+
+false
+
+
+Constraint:
+null
+true
+population = elite@pre
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+p : elite@pre
+null
+p.fitnessval = p.fitness()
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+p : recombined@pre
+null
+p.fitnessval = p.fitness()
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+p : mutated@pre
+null
+p.fitnessval = p.fitness()
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+p : recombined@pre
+population@pre->forAll( q | q.fitnessval /= p.fitnessval )
+p : population
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+p : mutated@pre
+population@pre->forAll( q | q.fitnessval /= p.fitnessval )
+p : population
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+null
+true
+elite = Set{} & recombined = Set{} & mutated = Set{}
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+q = population@pre
+q.size > maxpop + 100
+self.cull(q->sortedBy(fitnessval),q.size)
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+population.size > 0
+null
+GeneticAlgorithm.maxfitness = population->collect(fitnessval)->max()
+GeneticAlgorithm nextgeneration
+false
+
+
+
+Constraint:
+null
+true
+( "Population size = " + population.size )->display() & ( "Max fitness = " + GeneticAlgorithm.maxfitness )->display()
+GeneticAlgorithm nextgeneration
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+initialise 
+
+
+
+false
+
+
+Constraint:
+nclasses = UMLClass.allInstances.size
+null
+GeneticAlgorithm->exists( ga | ga.maxvalue = nclasses & ga.maxpop = 300 )
+ClassModel initialise
+false
+
+
+
+Constraint:
+j : Integer.subrange(1,300)
+null
+GAIndividual->exists( g | Feature->forAll( f | GATrait->exists( t | t.item = f.name & t.value = ( Math.random() * GeneticAlgorithm.maxvalue )->floor() + 1 & t : g.traits ) ) & g : population )
+GeneticAlgorithm initialise
+false
+
+
+
+Constraint:
+i : Integer.subrange(1,100)
+null
+GAIndividual->exists( g | Feature->forAll( f | GATrait->exists( t | t.item = f.name & t.value = UMLClass.allInstances->indexOf(f.isEncapsulatedBy.any) & t : g.traits ) ) & g : population )
+GeneticAlgorithm initialise
+false
+
+
+
+Constraint:
+p : population
+null
+p.fitnessval = p.fitness()
+GeneticAlgorithm initialise
+false
+
+
+
+Constraint:
+population.size > 0
+null
+GeneticAlgorithm.maxfitness = population->collect(fitnessval)->max() & ( "Population size = " + population.size )->display() & ( "Maxfitness = " + maxfitness )->display()
+GeneticAlgorithm initialise
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+postprocess 
+
+
+
+false
+
+
+Constraint:
+population.size > 0
+g = population->selectMaximals(fitnessval)->any()
+g.traits->forAll( t | UMLClass.allInstances->at(t.value) : Feature[t.item].isEncapsulatedBy )
+GeneticAlgorithm postprocess
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+ga iter int 
+
+
+
+false
+
+
+Constraint:
+null
+true
+initialise()
+null ga
+false
+
+
+
+Constraint:
+null
+true
+Integer.subrange(1,iter)->forAll( i | evolve() & nextgeneration() )
+GeneticAlgorithm ga
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+createClasses1 
+
+
+
+false
+
+
+Constraint:
+null
+isEncapsulatedBy@pre->isEmpty() & deps = dependsOn0(Set{self})
+UMLClass->exists( c | c.name = name + "Class" & deps->forAll( d | d.isEncapsulatedBy@pre->isEmpty() => d : c.encapsulates ) & self : c.encapsulates )
+UMLMethod createClasses1
+false
+
+
+
+
+
+
+
+GeneralUseCase:
+createClasses2 
+
+
+
+false
+
+
+Constraint:
+null
+isEncapsulatedBy@pre->isEmpty() & deps = dependsOn(Set{self})
+UMLClass->exists( c | c.name = name + "Class" & deps->forAll( d | d.isEncapsulatedBy@pre->isEmpty() => d : c.encapsulates ) & self : c.encapsulates )
+UMLMethod createClasses2
+false
+
+
+
+
+

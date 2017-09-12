@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/ttc16-cra-sigma/src-gen/main/java" modelPluginID="ttc16-cra-sigma"
+    modelName="ArchitectureCRA" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0" copyrightFields="false" importOrganizing="true">
+  <foreignModel>architectureCRA.ecore</foreignModel>
+  <genPackages prefix="Architecture" basePackage="at.ac.tuwien.big.momot.examples.modularization.ttc"
+      disposableProviderFactory="true" ecorePackage="architectureCRA.ecore#/">
+    <genClasses ecoreClass="architectureCRA.ecore#//ClassModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference architectureCRA.ecore#//ClassModel/classes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference architectureCRA.ecore#//ClassModel/features"/>
+    </genClasses>
+    <genClasses ecoreClass="architectureCRA.ecore#//Class">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference architectureCRA.ecore#//Class/encapsulates"/>
+    </genClasses>
+    <genClasses ecoreClass="architectureCRA.ecore#//Attribute"/>
+    <genClasses ecoreClass="architectureCRA.ecore#//Method">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference architectureCRA.ecore#//Method/dataDependency"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference architectureCRA.ecore#//Method/functionalDependency"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="architectureCRA.ecore#//Feature">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference architectureCRA.ecore#//Feature/isEncapsulatedBy"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="architectureCRA.ecore#//NamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute architectureCRA.ecore#//NamedElement/name"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

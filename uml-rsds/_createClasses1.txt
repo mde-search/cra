@@ -1,0 +1,8 @@
+use case: createClasses1
+
+
+UMLMethod::
+isEncapsulatedBy@pre->isEmpty() & deps = dependsOn(Set{self}) => 
+  UMLClass->exists( c | c.name = name + "Class" & deps->forAll( d | d.isEncapsulatedBy@pre->isEmpty()  => d : c.encapsulates ) & self : c.encapsulates )
+
+

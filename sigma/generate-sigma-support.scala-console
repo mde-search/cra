@@ -1,0 +1,10 @@
+val args = Array(
+  "-i","src/main/resources/architectureCRA.genmodel",
+  "-o","src-gen/main/scala",
+  "--clean",
+  "--use-option"
+)
+
+// ----------------------------------------------------------
+import fr.unice.i3s.sigma.emf.tool.GenerateSigmaSupport
+GenerateSigmaSupport(args)

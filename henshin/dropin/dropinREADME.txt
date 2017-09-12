@@ -1,0 +1,1 @@
+Place Jar "cra.ttc16_1.0.0" in the directory 'dropin' of your used Eclipse to obtain the architectureCRA.ecore model of the TTC contest in the installed packages of your Eclipse.
