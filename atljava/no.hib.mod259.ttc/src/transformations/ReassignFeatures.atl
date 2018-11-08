@@ -1,0 +1,77 @@
+-- @atlcompiler emftvm
+-- @nsURI architectureCRA=http://momot.big.tuwien.ac.at/architectureCRA/1.0
+
+
+module ReassignFeatures;
+create OUT: architectureCRA from IN: architectureCRA;
+
+helper def: classes: Sequence(architectureCRA!Class) =
+	architectureCRA!Class.allInstances();
+
+helper def: features: Integer =
+	architectureCRA!Feature.allInstances().size();
+
+helper def: modify: Real =
+	(1.0 / thisModule.features);
+
+helper def: randomFloat: Real =
+	let rnd: "#na-tive"!"java::util::Random" =
+		"#native"!"java::util::Random".newInstance()
+	in
+		rnd.nextDouble();
+
+helper def: randomInt(i: Integer): Integer =
+	let rnd: "#na-tive"!"java::util::Random" =
+		"#native"!"java::util::Random".newInstance()
+	in
+		rnd.nextInt(i) + 1;
+
+helper context architectureCRA!Feature def: getClass: architectureCRA!Class =
+	if thisModule.modify > thisModule.randomFloat then
+		thisModule.classes.at(thisModule.randomInt(thisModule.classes.size()))
+	else
+		self.isEncapsulatedBy
+	endif;
+
+rule cm2cm {
+	from
+		cm: architectureCRA!ClassModel
+	to
+		cmO: architectureCRA!ClassModel (
+			name <- cm.name,
+			classes <- cm.classes,
+			features <- cm.features
+		)
+}
+
+rule setClasses {
+	from
+		s: architectureCRA!Class
+	to
+		t: architectureCRA!Class (
+			encapsulates <- s.encapsulates,
+			name <- s.name
+		)
+}
+
+rule feat2attribute {
+	from
+		f: architectureCRA!Attribute
+	to
+		atr: architectureCRA!Attribute (
+			name <- f.name,
+			isEncapsulatedBy <- f.getClass
+		)
+}
+
+rule feat2method {
+	from
+		f: architectureCRA!Method
+	to
+		m: architectureCRA!Method (
+			name <- f.name,
+			isEncapsulatedBy <- f.getClass,
+			dataDependency <- f.dataDependency,
+			functionalDependency <- f.functionalDependency
+		)
+}

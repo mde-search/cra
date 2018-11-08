@@ -1,0 +1,83 @@
+-- @atlcompiler emftvm
+-- @nsURI EMFTVM=http://www.eclipse.org/m2m/atl/2011/EMFTVM
+-- @path architectureCRA=/ArchitectureCRA/model/architectureCRA.ecore
+
+
+module Model2Classes;
+create OUT: architectureCRA from IN: architectureCRA;
+
+helper def: randomInt(i: Integer): Integer =
+	let rnd: "#native"!"java::util::Random" =
+		"#native"!"java::util::Random".newInstance()
+	in
+		rnd.nextInt(i) + 1;
+
+helper def: cmInstance: architectureCRA!ClassModel =
+	architectureCRA!ClassModel.allInstances().first();
+
+helper def: classList: Sequence(architectureCRA!Class) =
+	Sequence{};
+
+helper def: counter: Integer =
+	0;
+
+helper def: features: Sequence(architectureCRA!Feature) =
+	Sequence{};
+
+rule createEmptyClasses {
+	from
+		cm: architectureCRA!ClassModel
+	to
+		cmO: architectureCRA!ClassModel (
+			name <- thisModule.randomInt(1000).toString(),
+			features <- cm.features
+		)
+	do{
+			thisModule.cmInstance <- cm;
+			thisModule.features <- cm.features;
+		}
+}
+
+rule feat2attribute {
+	from
+		ft: architectureCRA!Attribute
+	to
+		f: architectureCRA!Attribute (
+			name <- ft.name,
+			isEncapsulatedBy <- ft.isEncapsulatedBy
+		),
+		c: architectureCRA!Class (
+		)
+	do {
+	    c.name <- 'Class' + thisModule.counter.toString();
+	   	thisModule.counter <- thisModule.counter + 1;
+	   	thisModule.classList <- thisModule.classList.append(c);
+	   thisModule.cmInstance.classes <- thisModule.classList;
+	   
+	   f.isEncapsulatedBy <- thisModule.classList.at(thisModule.randomInt(thisModule.
+			classList.size()));
+	   }
+}
+
+rule feat2method {
+	from
+		ft: architectureCRA!Method
+	to
+		f: architectureCRA!Method (
+			name <- ft.name,
+			isEncapsulatedBy <- ft.isEncapsulatedBy,
+			dataDependency <- ft.dataDependency,
+			functionalDependency <- ft.functionalDependency
+		),
+		c: architectureCRA!Class (
+		)
+	do {
+	   	c.name <- 'Class' + thisModule.counter.toString();
+	   	thisModule.counter <- thisModule.counter + 1;
+	   	thisModule.classList <- thisModule.classList.append(c);
+	   thisModule.cmInstance.classes <- thisModule.classList;
+	   
+	  f.isEncapsulatedBy <- thisModule.classList.at(thisModule.randomInt(thisModule.
+			classList.size()));
+	 }
+}

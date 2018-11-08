@@ -1,0 +1,58 @@
+-- @atlcompiler emftvm
+-- @nsURI architectureCRA=http://momot.big.tuwien.ac.at/architectureCRA/1.0
+
+module DeleteEmptyClasses;
+create OUT : architectureCRA from IN : architectureCRA; 
+
+rule cm2cm {
+	from
+		cm : architectureCRA!ClassModel
+	to 
+		cmO : architectureCRA!ClassModel (
+			name <- cm.name,
+			classes <- cm.classes,
+			features <- cm.features
+		) 
+}
+
+rule setClasses {
+	from 
+	  s : architectureCRA!Class (not s.encapsulates.isEmpty())
+	 to	 
+	   t : architectureCRA!Class (
+	   	encapsulates <- s.encapsulates,
+		name <- s.name
+	   )
+}
+
+rule delClasses {
+	from 
+	  s : architectureCRA!Class (s.encapsulates.isEmpty())
+	
+}
+
+
+rule feat2attribute {
+	from 
+	  f : architectureCRA!Attribute
+	 to
+	    atr : architectureCRA!Attribute(
+	     name <- f.name,
+		 isEncapsulatedBy <- f.isEncapsulatedBy
+	    )
+		
+}
+
+rule feat2method {
+	from 
+	  f : architectureCRA!Method
+	 to
+	    m : architectureCRA!Method(
+	     name <- f.name,
+		 isEncapsulatedBy <- f.isEncapsulatedBy,
+		 dataDependency <- f.dataDependency,
+		 functionalDependency <- f.functionalDependency		 
+	    )
+		
+}
+
